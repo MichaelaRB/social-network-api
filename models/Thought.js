@@ -1,11 +1,5 @@
 const { Schema, model } = require('mongoose');
-var createdDate = new Date;
 const reactionSchema = require('./Reaction');
-
-let day = createdDate.getDate();
-let month = createdDate.getMonth() + 1;
-let year = createdDate.getFullYear();
-createdDate = month+"/"+day+"/"+year;
 
 // Schema to create Thought model
 const thoughtSchema = new Schema(
@@ -15,7 +9,7 @@ const thoughtSchema = new Schema(
         required: true,
         validate: {
             validator: function(text) {
-                return /^[a-z0-9_\.-!?@]{1,280}$/.test(text);
+                return /^[\s\S]{1,280}$/.test(text);
             }
         }
     },
@@ -23,7 +17,7 @@ const thoughtSchema = new Schema(
         type: Date,
         required: true,
         unique: true,
-        default: this.createdDate,
+        default: Date.now(),
         },
     username: {
         type: String,

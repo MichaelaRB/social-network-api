@@ -1,6 +1,12 @@
 const { ObjectId } = require('mongoose').Types;
-const { User } = require('../models/User');
-const { Thought } = require('../models/Thought');
+const User  = require('../models/User');
+const Thought = require('../models/Thought');
+
+var createdDate = new Date;
+let day = createdDate.getDate();
+let month = createdDate.getMonth() + 1;
+let year = createdDate.getFullYear();
+createdDate = month+"/"+day+"/"+year;
 
 
 module.exports= {
@@ -39,10 +45,15 @@ module.exports= {
     //create a new thought
     async createThought(req, res) {
         try {
-            const thought = await Thought.create(req.body);
             const user = await User.findOne(
                 { _id: req.params.userId },
             );
+            const name = user.username;
+            const thought = await Thought.create({
+                ...req.body,
+                username: name,
+                createdAt: createdDate
+            });
 
             user.thoughts.push(thought._id);
 

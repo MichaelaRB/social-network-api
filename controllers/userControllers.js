@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
-const { User } = require('../models/User');
-const { Thought } = require('../models/Thought');
+const User = require('../models/User');
+const Thought = require('../models/Thought');
 
 
 module.exports= {
@@ -9,6 +9,7 @@ module.exports= {
         try {
             const users = await User.find();
             
+            if(!users) return res.status(404).json({ message: "There are no users!"});
             return res.json(users);
         }  catch (err) {
             console.log(err);
@@ -43,6 +44,7 @@ module.exports= {
             res.json(user);
         } catch (err) {
             res.status(500).json(err);
+            console.log(err);
         }
     },
 
@@ -86,7 +88,7 @@ module.exports= {
         try {
             const user = await User.findOneAndUpdate(
                 { _id: req.params.userId },
-                { $addToSet: { friends: req.body }},
+                { $addToSet: { friends: req.params.friendId }},
                 { runValidators: true, new: true}
             );
 
@@ -104,7 +106,7 @@ module.exports= {
         try {
             const user = await User.findOneAndUpdate(
                 { _id: req.params.userId },
-                { $pull: { friends: { _id: req.params.friendId }}},
+                { $pull: { friends: { $in: req.params.friendId }}},
                 { runValidators: true, new: true}
             );
 
@@ -114,6 +116,7 @@ module.exports= {
             res.json(user);
         } catch (err) {
             res.status(500).json(err);
+            console.log(err);
         }
     }
 }

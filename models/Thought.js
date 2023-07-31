@@ -1,8 +1,11 @@
 const { Schema, model } = require('mongoose');
-const createdDate = Date.now;
+var createdDate = new Date;
 const reactionSchema = require('./Reaction');
 
-createdDate = createdDate.toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
+let day = createdDate.getDate();
+let month = createdDate.getMonth() + 1;
+let year = createdDate.getFullYear();
+createdDate = month+"/"+day+"/"+year;
 
 // Schema to create Thought model
 const thoughtSchema = new Schema(
@@ -38,7 +41,7 @@ const thoughtSchema = new Schema(
 
 
 
-userSchema
+thoughtSchema
   .virtual('reactionCount')
   .get(function () {
     return this.reactions.length;

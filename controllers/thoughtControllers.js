@@ -2,7 +2,11 @@ const { ObjectId } = require('mongoose').Types;
 const User  = require('../models/User');
 const Thought = require('../models/Thought');
 
-
+var createdDate = new Date;
+let day = createdDate.getDate();
+let month = createdDate.getMonth() + 1;
+let year = createdDate.getFullYear();
+createdDate = month+"/"+day+"/"+year;
 
 
 module.exports= {
@@ -38,11 +42,6 @@ module.exports= {
 
     //create a new thought
     async createThought(req, res) {
-        var createdDate = new Date;
-        let day = createdDate.getDate();
-        let month = createdDate.getMonth() + 1;
-        let year = createdDate.getFullYear();
-        createdDate = month+"/"+day+"/"+year;
         try {
             const user = await User.findOne(
                 { _id: req.params.userId },
@@ -51,7 +50,6 @@ module.exports= {
             const thought = await Thought.create({
                 ...req.body,
                 username: name,
-                createdAt: createdDate
             });
 
             user.thoughts.push(thought._id);
@@ -61,6 +59,7 @@ module.exports= {
             res.json(thought);
         } catch (err) {
             res.status(500).json(err);
+            console.log(err);
         }
     },
     
@@ -98,12 +97,6 @@ module.exports= {
         }
     },
     async createReaction(req,res) {
-        var createdDate = new Date;
-        let day = createdDate.getDate();
-        let month = createdDate.getMonth() + 1;
-        let year = createdDate.getFullYear();
-        createdDate = month+"/"+day+"/"+year;
-        
         try {
             const thought = await Thought.findOneAndUpdate(
                 { _id: req.params.thoughtId },
@@ -126,7 +119,7 @@ module.exports= {
         try {
             const thought = await Thought.findOneAndUpdate(
                 { _id: req.params.thoughtId },
-                { $pull: { reaction: { reactionId: req.params.reactionId } } },
+                { $pull: { reactions: { reactionId: req.params.reactionId } } },
                 { runValidators: true, new: true }
               );
         

@@ -2,18 +2,14 @@ const { ObjectId } = require('mongoose').Types;
 const User  = require('../models/User');
 const Thought = require('../models/Thought');
 
-var createdDate = new Date;
-let day = createdDate.getDate();
-let month = createdDate.getMonth() + 1;
-let year = createdDate.getFullYear();
-createdDate = month+"/"+day+"/"+year;
+
 
 
 module.exports= {
     //get all thoughts
     async getThoughts(req, res) {
         try {
-            const thoughts = await Thought.find();
+            const thoughts = await Thought.find().populate('reactions');
             
             return res.json(thoughts);
         }  catch (err) {
@@ -25,9 +21,7 @@ module.exports= {
     //get a single thought
     async getSingleThought(req, res) {
         try {
-            const thought = await Thought.findOne({_id: req.params.thoughtId})
-            .select('-__v')
-            .lean();
+            const thought = await Thought.findOne({_id: req.params.thoughtId}).populate('reactions');
 
             if(!thought) {
                 return res.status(404).json({ message: 'There is no thought with that ID' });
@@ -44,6 +38,11 @@ module.exports= {
 
     //create a new thought
     async createThought(req, res) {
+        var createdDate = new Date;
+        let day = createdDate.getDate();
+        let month = createdDate.getMonth() + 1;
+        let year = createdDate.getFullYear();
+        createdDate = month+"/"+day+"/"+year;
         try {
             const user = await User.findOne(
                 { _id: req.params.userId },
@@ -99,6 +98,12 @@ module.exports= {
         }
     },
     async createReaction(req,res) {
+        var createdDate = new Date;
+        let day = createdDate.getDate();
+        let month = createdDate.getMonth() + 1;
+        let year = createdDate.getFullYear();
+        createdDate = month+"/"+day+"/"+year;
+        
         try {
             const thought = await Thought.findOneAndUpdate(
                 { _id: req.params.thoughtId },

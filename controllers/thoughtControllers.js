@@ -1,5 +1,5 @@
 const { ObjectId } = require('mongoose').Types;
-const { User, Thought, Reaction } = require('../models');
+const { User, Thought } = require('../models');
 
 
 module.exports= {
@@ -88,37 +88,38 @@ module.exports= {
     },
     async createReaction(req,res) {
         try {
-            const reaction = await Reaction.create(req.body);
-            const thought = await Thought.findOne(
+            const thought = await Thought.findOneAndUpdate(
                 { _id: req.params.thoughtId },
-            );
-
-            thought.reactions.push(reaction._id);
-
-            await thought.save();
-
-            res.json(reaction);
+                { $addToSet: { reactions: req.body } },
+                { runValidators: true, new: true }
+              );
+        
+              if (!thought) {
+                return res
+                  .status(404)
+                  .json({ message: 'This thought does not exist.' });
+              }
+        
+              res.json(thought);
         } catch (err) {
             res.status(500).json(err);
         }
     },
     async deleteReaction(req, res) {
         try {
-            const thought = await Thought.findOne({ _id: req.params.thoughtId });
-    
-            if (!thought) {
-                res.status(404).json({ message: 'This thought does not exist.' });
-            };
-            
-            const reactIndex = thought.reactions.findIndex(
-                (reactionId) => reactionId.toString() === req.params.reactionId
-            );
-
-            thought.reactions.splice(reactIndex, 1);
-
-            await thought.save();
-
-            res.json({ message: 'The reaction has been deleted!' });
+            const thought = await Thought.findOneAndUpdate(
+                { _id: req.params.thoughtId },
+                { $pull: { reaction: { reactionId: req.params.reactionId } } },
+                { runValidators: true, new: true }
+              );
+        
+              if (!thought) {
+                return res
+                  .status(404)
+                  .json({ message: 'This thought does not exist.' });
+              }
+        
+              res.json(thought);
         } catch (err) {
             res.status(500).json(err);
         }

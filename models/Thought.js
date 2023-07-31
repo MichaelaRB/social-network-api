@@ -1,4 +1,7 @@
 const { Schema, model } = require('mongoose');
+const createdDate = Date.now;
+
+createdDate = createdDate.toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
 
 // Schema to create Thought model
 const thoughtSchema = new Schema(
@@ -16,7 +19,7 @@ const thoughtSchema = new Schema(
         type: Date,
         required: true,
         unique: true,
-        default: Date.now,
+        default: this.createdDate,
         },
     username: {
         type: String,

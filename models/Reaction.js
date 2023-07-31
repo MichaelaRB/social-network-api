@@ -1,4 +1,7 @@
 const { Schema, Types } = require('mongoose');
+const createdDate = Date.now;
+
+createdDate = createdDate.toLocaleDateString('en-us', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' });
 
 const reactionSchema = new Schema(
   {
@@ -17,7 +20,7 @@ const reactionSchema = new Schema(
     },
     createdAt: {
       type: Date,
-      default: Date.now,
+      default: this.createdDate,
     },
   },
   {
